@@ -1,9 +1,3 @@
-"""
-License: Commercial
-Copyright (c) 2019 - present AppSeed.us
-Copyright (c) 2020 - present Neuro Assassin (https://github.com/Cog-Creators/Red-Dashboard)
-"""
-
 import typing  # isort:skip
 
 import base64
