@@ -1,7 +1,8 @@
+
 {% extends "layouts/base.html" %}
 
 {% block title %}
-  {{ _("Error 500") }}
+  {{ _("Erreur 500") }}
 {% endblock %}
 
 {% block stylesheets %}{% endblock %}
@@ -36,15 +37,4 @@
   </main>
 {% endblock %}
 
-{% block javascripts %}
-  <script src="https://browser.sentry-cdn.com/8.33.1/bundle.min.js" integrity="sha384-sFPcB85n1Dxb7c5bPiZoyQ3ZgRpmAcWLfPOMBYtHMglKfXQtM1jLmy881pMN48v7" crossorigin="anonymous"></script>
-  <script>
-    Sentry.init({ dsn: "https://b8aa94f624f38f748d90cd77b593376a@o4507885141753856.ingest.us.sentry.io/4507887488598016" });
-
-    // Assuming `event_id` is passed to the template context
-    var eventId = "{{ event_id }}";
-    if (eventId) {
-      Sentry.showReportDialog({ eventId: eventId });
-    }
-  </script>
-{% endblock %}
+{% block javascripts %}{% endblock %}
