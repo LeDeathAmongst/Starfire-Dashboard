@@ -1,5 +1,5 @@
 """
-The base of the RPC management has been done!
+The base of the RPC management has been done by Neuro Assassin (https://github.com/Cog-Creators/Red-Dashboard)!
 """
 
 import typing  # isort:skip

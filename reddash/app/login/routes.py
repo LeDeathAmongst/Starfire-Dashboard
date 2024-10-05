@@ -1,5 +1,5 @@
 """
-The base of the login process has been done!
+The base of the login process has been done by Neuro Assassin (https://github.com/Cog-Creators/Red-Dashboard)!
 """
 
 import datetime
@@ -37,7 +37,7 @@ async def login():
     if app.data["core"]["secret"] is None:
         flash(
             _(
-                "Authorization is unavailable for Starfire Dashboard until setting a secret Discord OAuth key. If you believe this message is delivered in error, please contact the developer for assistance."
+                "Authorization is unavailable for Red-Dashboard until setting a secret Discord oauth key. If you believe this message is delivered in error, please contact the developer for assistance."
             ),
             category="danger",
         )
@@ -173,7 +173,7 @@ async def logout():
         except (KeyError, ValueError):
             pass
         logout_user()
-        flash(_("You have been logged out successfully"), category="success")
+        flash(_("You have been deconnected with success."), category="success")
     return redirect(url_for("login_blueprint.login"))
 
 
