@@ -641,7 +641,15 @@ def check_for_disconnect(app: Flask, method: str, result: typing.Union[str, typi
         bool: True if still connected, False if disconnected.
     """
     if isinstance(result, str):
-        # Handle the case where result is a string
+        app.logger.error(f"Received string result for method {method}: {result}")
+        app.config["RPC_CONNECTED"] = False
+        if app.ws is not None:
+            app.ws.close()
+            app.ws = None
+        return False
+
+    if not isinstance(result, dict):
+        app.logger.error(f"Unexpected result type for method {method}: {type(result)}")
         app.config["RPC_CONNECTED"] = False
         if app.ws is not None:
             app.ws.close()
@@ -653,13 +661,14 @@ def check_for_disconnect(app: Flask, method: str, result: typing.Union[str, typi
         and result.get("error", {}).get("message") == "Method not found"
         or result.get("disconnected", False)
     ):
+        app.logger.error(f"Disconnection detected for method {method}: {result}")
         app.config["RPC_CONNECTED"] = False
         if app.ws is not None:
             app.ws.close()
             app.ws = None
         return False
-    return True
 
+    return True
 
 async def get_result(app: Flask, request: typing.Dict[str, typing.Any], *, retry: bool = True) -> typing.Dict[str, typing.Any]:
     if app.cog is not None:
