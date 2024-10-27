@@ -58,7 +58,7 @@ WS_EXCEPTIONS = (
 
 
 class User(UserMixin):
-    USERS: typing.Dict[int, "User"] = {}
+    USERS: typing.Dict[str, "User"] = {}
 
     def __init__(
         self,
@@ -628,47 +628,19 @@ def initialize_websocket(app: Flask) -> bool:
     return True
 
 
-def check_for_disconnect(app: Flask, method: str, result: typing.Union[str, typing.Dict[str, typing.Any]]) -> bool:
-    """
-    Check if the connection has been disconnected based on the result.
-
-    Args:
-        app (Flask): The Flask application instance.
-        method (str): The method name that was called.
-        result (Union[str, Dict[str, Any]]): The result from the RPC call, either a string or a dictionary.
-
-    Returns:
-        bool: True if still connected, False if disconnected.
-    """
-    if isinstance(result, str):
-        app.logger.error(f"Received string result for method {method}: {result}")
-        app.config["RPC_CONNECTED"] = False
-        if app.ws is not None:
-            app.ws.close()
-            app.ws = None
-        return False
-
-    if not isinstance(result, dict):
-        app.logger.error(f"Unexpected result type for method {method}: {type(result)}")
-        app.config["RPC_CONNECTED"] = False
-        if app.ws is not None:
-            app.ws.close()
-            app.ws = None
-        return False
-
+def check_for_disconnect(app: Flask, method: str, result: typing.Dict[str, typing.Any]) -> bool:
     if (
         "error" in result
-        and result.get("error", {}).get("message") == "Method not found"
+        and result["error"]["message"] == "Method not found"
         or result.get("disconnected", False)
     ):
-        app.logger.error(f"Disconnection detected for method {method}: {result}")
-        app.config["RPC_CONNECTED"] = False
+        app.config["RPC_CONNECTED"]: bool = False
         if app.ws is not None:
             app.ws.close()
             app.ws = None
         return False
-
     return True
+
 
 async def get_result(app: Flask, request: typing.Dict[str, typing.Any], *, retry: bool = True) -> typing.Dict[str, typing.Any]:
     if app.cog is not None:
