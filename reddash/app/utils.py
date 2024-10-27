@@ -628,18 +628,26 @@ def initialize_websocket(app: Flask) -> bool:
     return True
 
 
-def check_for_disconnect(app: Flask, method: str, result: typing.Dict[str, typing.Any]) -> bool:
+def check_for_disconnect(app: Flask, method: str, result: typing.Union[str, typing.Dict[str, typing.Any]]) -> bool:
     """
     Check if the connection has been disconnected based on the result.
 
     Args:
         app (Flask): The Flask application instance.
         method (str): The method name that was called.
-        result (Dict[str, Any]): The result dictionary from the RPC call.
+        result (Union[str, Dict[str, Any]]): The result from the RPC call, either a string or a dictionary.
 
     Returns:
         bool: True if still connected, False if disconnected.
     """
+    if isinstance(result, str):
+        # Handle the case where result is a string
+        app.config["RPC_CONNECTED"] = False
+        if app.ws is not None:
+            app.ws.close()
+            app.ws = None
+        return False
+
     if (
         "error" in result
         and result.get("error", {}).get("message") == "Method not found"
