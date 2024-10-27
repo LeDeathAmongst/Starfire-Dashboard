@@ -58,7 +58,7 @@ WS_EXCEPTIONS = (
 
 
 class User(UserMixin):
-    USERS: typing.Dict[str, "User"] = {}
+    USERS: typing.Dict[int, "User"] = {}
 
     def __init__(
         self,
@@ -629,12 +629,23 @@ def initialize_websocket(app: Flask) -> bool:
 
 
 def check_for_disconnect(app: Flask, method: str, result: typing.Dict[str, typing.Any]) -> bool:
+    """
+    Check if the connection has been disconnected based on the result.
+
+    Args:
+        app (Flask): The Flask application instance.
+        method (str): The method name that was called.
+        result (Dict[str, Any]): The result dictionary from the RPC call.
+
+    Returns:
+        bool: True if still connected, False if disconnected.
+    """
     if (
         "error" in result
-        and result["error"]["message"] == "Method not found"
+        and result.get("error", {}).get("message") == "Method not found"
         or result.get("disconnected", False)
     ):
-        app.config["RPC_CONNECTED"]: bool = False
+        app.config["RPC_CONNECTED"] = False
         if app.ws is not None:
             app.ws.close()
             app.ws = None
