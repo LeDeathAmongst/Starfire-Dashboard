@@ -36,43 +36,37 @@ class TasksManager:
                     "method": method,
                     "params": [only_bot_variables, [self.app.host, self.app.port]] if method == "DASHBOARDRPC__GET_VARIABLES" else [],
                 }
-
                 if self.app.cog is None:
                     with self.app.lock:
+                        # This needs to be inside the lock, or both threads will create a websocket.
                         if not self.app.ws:
                             initialized = initialize_websocket(self.app)
                             if not initialized:
-                                self.app.logger.warning(f"Failed to initialize websocket for method: {method}")
                                 continue
                         result = await get_result(self.app, request, retry=False)
                         if not result:
-                            self.app.logger.warning(f"No result received for method: {method}")
-                            continue
-                        if not isinstance(result, dict):
-                            self.app.logger.error(f"Unexpected result type for method {method}: {type(result)}")
                             continue
                         connected = check_for_disconnect(self.app, method, result)
                         if not connected:
-                            self.app.logger.warning(f"Disconnected for method: {method}")
                             continue
                 else:
                     result = await get_result(self.app, request, retry=False)
                     if not result:
-                        self.app.logger.warning(f"No result received for method: {method}")
-                        continue
-                    if not isinstance(result, dict):
-                        self.app.logger.error(f"Unexpected result type for method {method}: {type(result)}")
                         continue
                     connected = check_for_disconnect(self.app, method, result)
                     if not connected:
-                        self.app.logger.warning(f"Disconnected for method: {method}")
                         continue
 
+                # if "result" not in result:
+                #     self.app.logger.error(f"RPC websocket returned an unexpected response: {result}")
+                #     continue
                 if method == "DASHBOARDRPC__GET_DATA":
                     self.app.data.update(**result)
                 elif method == "DASHBOARDRPC__GET_VARIABLES":
                     if not self.app.variables:
-                        self.app.logger.info("Initial connection made with Red bot. Syncing data...")
+                        self.app.logger.info(
+                            "Initial connection made with Red bot. Syncing data..."
+                        )
                     self.app.variables.update(**result)
 
                 if once:
