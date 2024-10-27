@@ -44,14 +44,14 @@ class TasksManager:
                             if not initialized:
                                 continue
                         result = await get_result(self.app, request, retry=False)
-                        if not result:
+                        if not result or not isinstance(result, dict):
                             continue
                         connected = check_for_disconnect(self.app, method, result)
                         if not connected:
                             continue
                 else:
                     result = await get_result(self.app, request, retry=False)
-                    if not result:
+                    if not result or not isinstance(result, dict):
                         continue
                     connected = check_for_disconnect(self.app, method, result)
                     if not connected:
