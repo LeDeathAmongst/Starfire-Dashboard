@@ -304,15 +304,15 @@ def register_blueprints(app: Flask) -> None:
 
     @app.errorhandler(404)
     async def not_found_error(error):
-        return await render_template("/errors/404.html", error_message=error.description), 404
+        return render_template("errors/404.html", error_message=error.description), 404
 
     @app.errorhandler(403)
     async def access_forbidden(error):
-        return await render_template("/errors/403.html", error_message=error.description), 403
+        return render_template("errors/403.html", error_message=error.description), 403
 
     @app.errorhandler(500)
     async def internal_error(error):
-        return await render_template("/errors/500.html", error_message=error.description), 500
+        return render_template("errors/500.html", error_message=error.description), 500
 
     @app.route("/error-<error>")
     async def route_errors(error):
